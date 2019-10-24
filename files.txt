@@ -1,0 +1,7 @@
+keylength.py finds the most probable length of the key
+
+key.py uses a function from keylength.py to get that length and 
+	figure out the key word. It writes it into keyword1.txt
+
+decrypt.py reads in the cipher text and the keyword, decrypts it,
+	and writes the plaintext into message1.txt
