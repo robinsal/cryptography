@@ -1,4 +1,13 @@
 '''
+	Steps of decryption:
+		Find the length of key
+		Determine the key itself
+		Decrypt the message using the key
+
+	This python file is used to find the probable length of a key
+'''
+
+'''
     First we need to create a way to determine the index of 
     coincidence for a given string. First we will count the
     frequency of each letter in the string. Then compute
@@ -17,7 +26,7 @@ def generate_hashtable(text):
     return dic, len(text)
 
 # returns the index of coincedence for the english alphabet
-# on a given frequency hash (produced by fcn above)
+# on a given frequency hash (produced by the fcn above)
 def coincidence_index((freqs, length)):
     total = 0.
     for i in freqs:
@@ -27,14 +36,14 @@ def coincidence_index((freqs, length)):
     return total * 26
 
 '''
-To determine the size of the keyword, we should arrange the text into
-'columns' of various sizes until we get a rough distribution
-where the index of coincidence of the characters in each column is 
-about 1.73 (the expected index of coincidence for the English language)
+	To determine the size of the keyword, we should arrange the text into
+	'columns' of various sizes until we get a rough distribution
+	where the index of coincidence of the characters in each column is 
+	about 1.73 (the expected index of coincidence for the English language)
 '''
 
 # returns the given string as a list of strings which can be thought
-# of as 'columns'. For example, given "abcdefghij" and the int 3
+# of as 'columns'. For example, given "abcdefghij" and the int 3 (for 3 columns)
 # this will return ["adgj", "beh", "cfi"]
 def split_text(text, num):
     lst = []
@@ -44,7 +53,7 @@ def split_text(text, num):
 
 # text is the string to be examined
 # num_of_columns is the number of 'columns' to break the text into
-# returns the average IC between each column of text
+# returns the average index of coincidence between each column of text
 def get_IC(text, num_of_columns):
     text_cols = split_text(text, num_of_columns)
     ic_list = [coincidence_index(generate_hashtable(x)) for x in text_cols]
@@ -56,8 +65,8 @@ def get_IC(text, num_of_columns):
     a procedure that returns the possible lengths of the keyword.
     I will assume the keyword length is less than 100, though
     it is worth noting that it might not be. Should the following
-    procedures not crack the cipher, the key length is probably
-    more than 100.
+    procedures not determine any probable lengths, the key length is
+    most likely more than 100.
 '''
 
 def get_possible_key_lengths():
@@ -78,16 +87,16 @@ def get_possible_key_lengths():
     f.close()
     return probable_lengths
 
-# Finally this is a function that will return the smallest length key that 
-# evenly divides all the largest possibilities. This is not guaranteed
-# to return the correct key length, but it is pretty likely that it will.
-def determine_most_likely():
-    possibilities = get_possible_key_lengths()
-    for i in range(len(possibilities)):
-        divides_everything_else = True
-        for j in range(i+1, len(possibilities)):
-            if possibilities[j] % possibilities[i] != 0:
-                divides_everything_else = False
-        if divides_everything_else:
-            return possibilities[i]
-    return possiblities[-1]
+'''
+	To use this file, generate the probable key lengths with get_possible_key_lengths
+	inputting the ciphertext file. This will return a list of possibilities and it
+	is up to the user to determine which ones are worth testing out.
+
+	Anything that is a multiple of previous possibilities is probably not the key.
+	For example, if the possibilities are [3, 6, 9, 12, ...], then the key is almost
+	certainly 3, because splitting it into 3k columns will satisfy the function's
+	test.
+	
+	To drive the point home, if the key is 'key', then 'keykey' will encrypt the
+	text in the same way.
+'''
